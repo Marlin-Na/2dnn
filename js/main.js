@@ -1,12 +1,57 @@
 
-
 let data;
 let labels;
 let net;
 let trainer;
 let N;
-const ITER_NUMBER_PER_PERIODIC = 2;
-const PERIODIC_INTERVAL = 10;
+let ITER_NUMBER_PER_PERIODIC = 5;
+let PERIODIC_INTERVAL = 50;
+
+function get_config() {
+    let form = document.getElementById("config-form");
+    let formdata = new FormData(form);
+    let raw_data = {};
+    for (const [key, value] of formdata) {
+        raw_data[key] = value;
+    }
+    for (let k of ['dsize', 'layer1', 'layer2', 'layer3', 'layer4', 'layer5']) {
+        raw_data[k] = parseInt(raw_data[k]);
+    }
+
+    let layer_defs = [];
+    layer_defs.push(
+        {type:'input', out_sx:1, out_sy:1, out_depth:2}
+    );
+    for (let k of ['layer1','layer2','layer3','layer4','layer5']) {
+        let num_neurons = raw_data[k];
+        if (num_neurons >= 1) {
+            layer_defs.push({type: "fc", num_neurons: num_neurons, activation: 'relu'});
+        }
+    }
+    layer_defs.push({type:'softmax', num_classes:2});
+
+    return {
+        dtype: raw_data.dtype,
+        dsize: raw_data.dsize,
+        layer_defs: layer_defs
+    };
+}
+
+function init_data(dtype, dsize) {
+    if (dsize === undefined) {
+        dsize = 50;
+    }
+    if (dtype === "circle") {
+        init_circle_data(dsize);
+    }
+    else if (dtype === "spiral") {
+        init_spiral_data(dsize);
+    }
+    else {
+        console.error(dtype);
+        throw "Unknown data type to initialize";
+    }
+}
 
 function init_circle_data(size) {
     if (size === undefined) {
@@ -23,7 +68,7 @@ function init_circle_data(size) {
     for(var i=0;i<size;i++) {
       var r = convnetjs.randf(3.0, 5.0);
       //var t = convnetjs.randf(0.0, 2*Math.PI);
-      var t = 2*Math.PI*i/50.0
+      var t = 2*Math.PI*convnetjs.randf(0.0, 1.0);
       data.push([r*Math.sin(t), r*Math.cos(t)]);
       labels.push(0);
     }
@@ -38,14 +83,16 @@ function init_spiral_data(size) {
         size = 50;
     }
     for(var i=0;i<size;i++) {
-        var r = i/n*5 + convnetjs.randf(-0.1, 0.1);
-        var t = 1.25*i/n*2*Math.PI + convnetjs.randf(-0.1, 0.1);
+        var rand = convnetjs.randf(0.0, 1.0);
+        var r = rand*5 + convnetjs.randf(-0.1, 0.1);
+        var t = 1.25*rand*2*Math.PI + convnetjs.randf(-0.1, 0.1);
         data.push([r*Math.sin(t), r*Math.cos(t)]);
         labels.push(1);
     }
     for(var i=0;i<size;i++) {
-        var r = i/n*5 + convnetjs.randf(-0.1, 0.1);
-        var t = 1.25*i/n*2*Math.PI + Math.PI + convnetjs.randf(-0.1, 0.1);
+        var rand = convnetjs.randf(0.0, 1.0);
+        var r = rand*5 + convnetjs.randf(-0.1, 0.1);
+        var t = 1.25*rand*2*Math.PI + Math.PI + convnetjs.randf(-0.1, 0.1);
         data.push([r*Math.sin(t), r*Math.cos(t)]);
         labels.push(0);
     }
@@ -53,16 +100,7 @@ function init_spiral_data(size) {
 }
 
 
-function init_net_and_trainer() {
-    let layer_defs = [
-        {type:'input', out_sx:1, out_sy:1, out_depth:2}, // Inputs are 2-dim data points
-        {type:'fc', num_neurons:20, activation:'relu'},
-        {type:'fc', num_neurons:20, activation:'relu'},
-        // {type:'fc', num_neurons:6, activation: 'tanh'},
-        // {type:'fc', num_neurons:2, activation: 'tanh'},
-        {type:'softmax', num_classes:2},
-    ];
-
+function init_net_and_trainer(layer_defs) {
     // create a net out of it
     net = new convnetjs.Net();
     net.makeLayers(layer_defs);
@@ -201,8 +239,13 @@ function start() {
         clearInterval(ID);
     }
 
-    init_circle_data();
-    init_net_and_trainer();
+    const config = get_config();
+    const dtype = config.dtype;
+    const dsize = config.dsize;
+    const layer_defs = config.layer_defs;
+
+    init_data(dtype, dsize);
+    init_net_and_trainer(layer_defs);
     plot();
 
     function periodic() {

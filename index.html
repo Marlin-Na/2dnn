@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Convnetjs Toy Example</title>
+    <title>2D Classification</title>
     <meta charset="utf-8">
  
     <link rel="stylesheet" type="text/css" href="css/main.css">
@@ -13,12 +13,61 @@
  
 <body onload="start()">
 
+<h2>2D Binary Classification Task with Neural Network</h2>
+
 <div class="row">
     <div class="tab-2">
         <svg id="plotsvg"></svg>
     </div>
-    <div class="tab-2">
-        <h2>Configuration</h2>
+    <div id="config-tab" class="tab-2">
+        <div class="contentdiv">
+            <h3>Configuration</h3>
+            <form id="config-form" autocomplete="off">
+                <p>
+                    <label for="dtype">Data Type</label>
+
+                    <select name="dtype" id="dtype">
+                        <option value="circle">Circle</option>
+                        <option value="spiral">Spiral</option>
+                    </select>
+                </p>
+                <p>
+                    <label for="dsize">Data Size (per type)</label>
+                    <input name="dsize" id="dsize" type="number" step="1" value=20 pattern="\d+"/>
+                </p>
+                <!--
+                <p>
+                    <label for="iternum">Number of iteration per period</label>
+                    <input name="iternum" id="iternum" type="number" step="1" value="10" pattern="\d+">
+                </p>
+                -->
+                <h4>Layers (zero neuron will remove that layer)</h4>
+                <p>
+                    <label for="layer1">Number of neurons (layer 1)</label>
+                    <input name="layer1" id="layer1" type="number" step="1" value="5" pattern="\d+">
+                </p>
+                <p>
+                    <label for="layer2">Number of neurons (layer 2)</label>
+                    <input name="layer2" id="layer2" type="number" step="1" value="5" pattern="\d+">
+                </p>
+                <p>
+                    <label for="layer3">Number of neurons (layer 3)</label>
+                    <input name="layer3" id="layer3" type="number" step="1" value="0" pattern="\d+">
+                </p>
+                <p>
+                    <label for="layer4">Number of neurons (layer 4)</label>
+                    <input name="layer4" id="layer4" type="number" step="1" value="0" pattern="\d+">
+                </p>
+                <p>
+                    <label for="layer5">Number of neurons (layer 5)</label>
+                    <input name="layer5" id="layer5" type="number" step="1" value="0" pattern="\d+">
+                </p>
+            </form>
+
+            <h4></h4>
+            <button onclick="start()">Start</button>
+
+        </div>
     </div>
 </div>
 

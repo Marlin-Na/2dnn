@@ -15,7 +15,27 @@ body {
     border: 1px dotted black;
 }
 
+.contentdiv {
+    margin: 10px;
+    width: 100%;
+}
+
 #plotsvg {
     width: 500px;
     height: 500px;
+}
+
+form  {    
+    display: table;
+    border-collapse: separate;
+    border-spacing: 5px;
+}
+p     { display: table-row;  }
+label { display: table-cell; }
+input { display: table-cell; }
+select { display: table-cell; width: 100%;}
+
+button {
+    height: 20px;
+    width: 200px;
 }
