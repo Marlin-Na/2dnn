@@ -1,0 +1,21 @@
+
+body {
+    width: 1000px;
+}
+
+.row {
+    width: 100%;
+    display: flex;
+}
+
+.tab-2 {
+    width: 100px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    border: 1px dotted black;
+}
+
+#plotsvg {
+    width: 500px;
+    height: 500px;
+}
